@@ -11,3 +11,7 @@ tasks:
     apt:
       name: curl
       state: present
+
+https://github.com/spring￾projects/spring-petclinic.git
+
+**/target/surefire-reports/*.xml
