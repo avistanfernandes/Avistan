@@ -1,1 +1,38 @@
+mapper.py
+import sys
+import csv
+
+for line in sys.stdin:
+    line = line.strip()
+    if line.startswith("userId"):  # skip header
+        continue
+    parts = next(csv.reader([line]))
+    if len(parts) >= 3:
+        movieId, tag = parts[1], parts[2]
+        print(f"{movieId}\t{tag}")
+
+
+ reducer.py
+import sys
+from collections import defaultdict
+
+movie_tags = defaultdict(list)
+
+for line in sys.stdin:
+    line = line.strip()
+    if not line:
+        continue
+    movieId, tag = line.split("\t", 1)
+    movie_tags[movieId].append(tag)
+
+for movieId, tags in movie_tags.items():
+    unique_tags = list(set(tags))  # remove duplicates
+    print(f"{movieId}\t{unique_tags}")
+
+tags.csv
+userId,movieId,tag,timestamp
+15,339,classic,1138537770
+20,195,funny,1193435061
+20,195,highly quotable,1193435061
+47,203,romantic,1240597180
 
