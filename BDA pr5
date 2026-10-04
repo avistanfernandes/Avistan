@@ -1,0 +1,51 @@
+Program: 5 Implement Functions: Count – Sort – Limit – Skip – Aggregate using MongoDB 
+
+from pymongo import MongoClient
+
+# Connect to MongoDB (make sure MongoDB server is running)
+client = MongoClient("mongodb://localhost:27017/")
+
+# Create or switch to database
+db = client["CollegeDB"]
+
+# Create or switch to collection
+students = db["Students"]
+
+# Insert sample data (only if collection is empty)
+if students.count_documents({}) == 0:
+    sample_data = [
+        {"_id": 1, "name": "Alice", "dept": "CSE", "marks": 85},
+        {"_id": 2, "name": "Bob", "dept": "ECE", "marks": 75},
+        {"_id": 3, "name": "Charlie", "dept": "CSE", "marks": 90},
+        {"_id": 4, "name": "David", "dept": "EEE", "marks": 65},
+        {"_id": 5, "name": "Eve", "dept": "CSE", "marks": 95},
+    ]
+    students.insert_many(sample_data)
+
+print("\n--- All Documents ---")
+for s in students.find():
+    print(s)
+
+count = students.count_documents({})
+print(f"\nTotal number of students: {count}")
+
+print("\nStudents sorted by marks (descending):")
+for s in students.find().sort("marks", -1):
+    print(s)
+
+print("\nTop 3 students by marks:")
+for s in students.find().sort("marks", -1).limit(3):
+    print(s)
+
+print("\nStudents after skipping top 2 by marks:")
+for s in students.find().sort("marks", -1).skip(2):
+    print(s)
+
+print("\nAverage marks by department:")
+pipeline = [
+    {"$group": {"_id": "$dept", "avg_marks": {"$avg": "$marks"}}}
+
+]
+for result in students.aggregate(pipeline):
+    print(result)
+client.close()
